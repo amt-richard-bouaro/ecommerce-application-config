@@ -6,17 +6,17 @@ spring:
       mvc:
         routes:
           - id: user-management-service
-            uri: lb://user-management-service
+            uri: lb://user-management-service-dev
             predicates:
               - Path=/api/v1/user/**
 
           - id: product-service
-            uri: lb://product-service
+            uri: lb://product-service-dev
             predicates:
               - Path=/api/v1/product/**
 
           - id: order-service
-            uri: lb://order-service
+            uri: lb://order-service-dev
             predicates:
               - Path=/api/v1/order/**
 
