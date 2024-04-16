@@ -8,17 +8,17 @@ spring:
           - id: user-management-service
             uri: lb://user-management-service-dev
             predicates:
-              - Path=/api/v1/user/**
+              - Path=/api/v1/users/**
 
           - id: product-service
             uri: lb://product-service-dev
             predicates:
-              - Path=/api/v1/product/**
+              - Path=/api/v1/products/**
 
           - id: order-service
             uri: lb://order-service-dev
             predicates:
-              - Path=/api/v1/order/**
+              - Path=/api/v1/orders/**
 
           - id: discovery-server
             uri: http://localhost:8761
