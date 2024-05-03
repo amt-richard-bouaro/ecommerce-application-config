@@ -1,0 +1,29 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  config:
+    import: optional:configserver:http://localhost:8084
+  profiles:
+    active: discovery-server-dev
+  application:
+    name: discovery-server
+
+server:
+  port: 8761
+
+application:
+  security:
+    user:
+      name: eureka
+      password: root
+
+eureka:
+  server:
+    enable-self-preservation: true
+    expected-client-renewal-interval-seconds: 30
+  instance:
+    hostname: localhost
+  client:
+    fetch-registry: false
+    register-with-eureka: false
