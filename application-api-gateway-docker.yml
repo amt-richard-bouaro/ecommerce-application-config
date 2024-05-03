@@ -1,0 +1,108 @@
+jasypt:
+  encryptor:
+    password: PBEWithHMACSHA512AndAES_256
+
+spring:
+  config:
+    import: optional:configserver:http://config-server:8084
+  profiles:
+    active: api-gateway-dev
+  application:
+    name: application-gateway
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: user-management-service
+            uri: lb://user-management-service
+            predicates:
+              - Path=/api/v1/users/**
+
+          - id: product-service
+            uri: lb://product-service
+            predicates:
+              - Path=/api/v1/products/**
+
+          - id: order-service
+            uri: lb://order-service
+            predicates:
+              - Path=/api/v1/orders/**
+
+          - id: discovery-server
+            uri: http://localhost:8761
+            predicates:
+              - Path=/eureka/web
+            filters:
+              - SetPath=/
+
+          - id: discovery-server-static
+            uri: http://localhost:8761
+            predicates:
+              - Path=/eureka/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 30
+    prefer-ip-address: true
+server:
+  port: 8090
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: ALWAYS
+  tracing:
+    sampling:
+      probability: 1.0
+
+resilience4j:
+ circuitbreaker:
+  instances:
+    userBreaker:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 5
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+      automatic-transition-from-open-to-half-open-enabled: true
+#      recordFailurePredicate: io.github.robwin.exception.RecordFailurePredicate
+
+resilience4j.retry:
+  instances:
+    userBreaker:
+      maxAttempts: 3
+      waitDuration: 2s
+#      retryExceptions:
+#        - org.springframework.web.client.HttpServerErrorException
+#        - java.io.IOException
+
+resilience4j.ratelimiter:
+  instances:
+    userBreaker:
+      limitForPeriod: 10
+      limitRefreshPeriod: 4s
+      timeoutDuration: 0
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+
+resilience4j.timelimiter:
+  instances:
+    userBreaker:
+      timeoutDuration: 10s
+      cancelRunningFuture: false
