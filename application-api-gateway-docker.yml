@@ -3,40 +3,36 @@ jasypt:
     password: PBEWithHMACSHA512AndAES_256
 
 spring:
-  config:
-    import: optional:configserver:http://config-server:8084
-  profiles:
-    active: api-gateway-dev
   application:
-    name: application-gateway
+    name: application-gateway-docker
   cloud:
     gateway:
       mvc:
         routes:
           - id: user-management-service
-            uri: lb://user-management-service
+            uri: lb://user-management-service-docker
             predicates:
               - Path=/api/v1/users/**
 
           - id: product-service
-            uri: lb://product-service
+            uri: lb://product-service-docker
             predicates:
               - Path=/api/v1/products/**
 
           - id: order-service
-            uri: lb://order-service
+            uri: lb://order-service-docker
             predicates:
               - Path=/api/v1/orders/**
 
           - id: discovery-server
-            uri: http://localhost:8761
+            uri: http://discovery-server:8761
             predicates:
               - Path=/eureka/web
             filters:
               - SetPath=/
 
           - id: discovery-server-static
-            uri: http://localhost:8761
+            uri: http://discovery-server:8761
             predicates:
               - Path=/eureka/**
 
@@ -45,9 +41,9 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-server:8761/eureka/
   instance:
-    hostname: localhost
+    hostname: discovery-server
     lease-renewal-interval-in-seconds: 30
     prefer-ip-address: true
 server:
@@ -68,6 +64,9 @@ management:
   tracing:
     sampling:
       probability: 1.0
+#  zipkin:
+#    tracing:
+#      endpoint: http://zipkin:9411/api/v2/spans
 
 resilience4j:
  circuitbreaker:
