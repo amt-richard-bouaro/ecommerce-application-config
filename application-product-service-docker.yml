@@ -1,0 +1,99 @@
+jasypt:
+  encryptor:
+    password: PBEWithHMACSHA512AndAES_256
+
+application:
+  key: eCommerce-microservices
+  security:
+    jwt:
+      secret-key: asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4
+
+spring:
+  config:
+    import: optional:configserver:http://localhost:8084
+  profiles:
+    active: product-service-dev
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:postgresql://localhost:4002/product_db
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    lease-renewal-interval-in-seconds: 30
+    prefer-ip-address: true
+server:
+  port: 8082
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: ALWAYS
+  tracing:
+    sampling:
+      probability: 1.0
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+        automatic-transition-from-open-to-half-open-enabled: true
+#      recordFailurePredicate: io.github.robwin.exception.RecordFailurePredicate
+
+resilience4j.retry:
+  instances:
+    userBreaker:
+      maxAttempts: 3
+      waitDuration: 2s
+#      retryExceptions:
+#        - org.springframework.web.client.HttpServerErrorException
+#        - java.io.IOException
+
+resilience4j.ratelimiter:
+  instances:
+    userBreaker:
+      limitForPeriod: 10
+      limitRefreshPeriod: 4s
+      timeoutDuration: 0
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+
+resilience4j.timelimiter:
+  instances:
+    userBreaker:
+      timeoutDuration: 10s
+      cancelRunningFuture: false
