@@ -2,6 +2,15 @@ jasypt:
   encryptor:
     password: PBEWithHMACSHA512AndAES_256
 
+
+user-management-service:
+  name: user-management-service-docker
+  url: http://user-management-service:8081
+
+product-service:
+  name: product-service-docker
+  url: http://product-service:8082
+
 application:
   key: eCommerce-microservices
   security:
@@ -9,19 +18,15 @@ application:
       secret-key: asdfSFS34wfsdfsdfSDSD32dfsddDDerQSNCK34SOWEK5354fdgdf4
 
 spring:
-  config:
-    import: optional:configserver:http://localhost:8084
-  profiles:
-    active: order-service-dev
   application:
     name: order-service
   datasource:
-    url: jdbc:postgresql://localhost:4003/order_db
+    url: jdbc:postgresql://postgres:4003/order_db
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
@@ -41,9 +46,9 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-server:8761/eureka/
   instance:
-    hostname: localhost
+    hostname: discovery-server
     lease-renewal-interval-in-seconds: 30
     prefer-ip-address: true
 
