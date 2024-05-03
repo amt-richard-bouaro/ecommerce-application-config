@@ -25,14 +25,14 @@ spring:
               - Path=/api/v1/orders/**
 
           - id: discovery-server
-            uri: http://discovery-server:8761
+            uri: http://host.docker.internal:8761
             predicates:
               - Path=/eureka/web
             filters:
               - SetPath=/
 
           - id: discovery-server-static
-            uri: http://discovery-server:8761
+            uri: http://host.docker.internal:8761
             predicates:
               - Path=/eureka/**
 
@@ -41,7 +41,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://discovery-server:8761/eureka/
+      defaultZone: http://host.docker.internal:8761/eureka/
   instance:
     hostname: discovery-server
     lease-renewal-interval-in-seconds: 30
